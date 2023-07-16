@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "salience"
+version = "0.0.0"
+description = ""
+authors = ["Matt Neary <neary.matt@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+flask = "^2.3.2"
+transformers = "^4.30.2"
+nltk = "^3.8.1"
+sentence-transformers = "^2.2.2"
+numpy = "^1.25.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

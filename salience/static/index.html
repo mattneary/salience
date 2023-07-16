@@ -1,0 +1,119 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <meta charset="utf8" />
+    <title>Salience</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.js" integrity="sha512-VW8/i4IZkHxdD8OlqNdF7fGn3ba0+lYqag+Uy4cG6BtJ/LIr8t23s/vls70pQ41UasHH0tL57GQfKDApqc9izA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <style>
+      body {
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        margin: 0;
+      }
+      p {
+        width: 700px;
+        margin: 1em auto;
+        color: #4d4d4d;
+        font-family: sans-serif;
+        font-size: 15px;
+        line-height: 1.33em;
+        flex: 1;
+        overflow-y: scroll;
+      }
+      h1 {
+        width: 700px;
+        text-align: left;
+        margin: 15px auto;
+        margin-bottom: 0;
+        color: #000;
+        font-family: sans-serif;
+        font-size: 24px;
+      }
+      h1 span {
+        display: block;
+        font-size: 0.7em;
+        font-weight: normal;
+        color: #a0a0a0;
+      }
+      span.sentence {
+        --salience: 1;
+        background-color: rgba(249, 239, 104, var(--salience));
+      }
+      span.highlight {
+        background-color: rgb(185, 225, 244);
+      }
+      ::selection {
+        background: transparent;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>
+      Salience
+      <span>automatic sentence highlights based on their significance to the document</span>
+    </h1>
+    <p id="content"></p>
+    <script type="text/javascript">
+      const content = document.querySelector('#content')
+      let adjacency = null
+      function scale(score) {
+        return Math.max(0, Math.min(1, score ** 3 - 0.95))
+      }
+      let exponent = 5
+      const redraw = () => {
+        if (!adjacency) return
+        const sentences = document.querySelectorAll('span.sentence')
+        if (!window.getSelection().isCollapsed) {
+          const sel = window.getSelection()
+          const fromNode = sel.anchorNode.parentNode
+          const toNode = sel.extentNode.parentNode
+          const fromIdx = Array.from(sentences).indexOf(fromNode)
+          const toIdx = Array.from(sentences).indexOf(toNode)
+          const range = [fromIdx, toIdx]
+          console.log('range', range)
+          range.sort((a, b) => a - b)
+          const vec = adjacency.map((x, i) => (i >= range[0] && i <= range[1]) ? 1 : 0)
+          const vec_sum = vec.reduce((a, x) => a + x, 0)
+          const scores = math.multiply(vec, adjacency).map(x => x * adjacency.length / vec_sum)
+          Array.from(sentences).forEach((node, i) => {
+            node.style.setProperty('--salience', scale(scores[i]))
+            if (i >= range[0] && i <= range[1]) node.classList.add('highlight')
+            else node.classList.remove('highlight')
+          })
+        } else {
+          const initial = adjacency.map(() => 1)
+          const scores = math.multiply(initial, math.pow(adjacency, exponent))
+          Array.from(sentences).forEach((node, i) => {
+            node.style.setProperty('--salience', scale(scores[i]))
+            node.classList.remove('highlight')
+          })
+        }
+      }
+      // Disabled functionality to center highlights on a selected fragment
+      // document.addEventListener('mousemove', redraw)
+      // document.addEventListener('mouseup', redraw)
+      fetch('/salience').then(async res => {
+        const data = await res.json()
+        console.log(data)
+        const source = data.source
+        const intervals = data.intervals
+        const tokens = intervals.map(([start, end]) => source.substr(start, end - start))
+        adjacency = data.adjacency
+        tokens.forEach((t, i) => {
+          const token = document.createElement('span')
+          token.innerText = t
+          token.classList.add('sentence')
+          content.appendChild(token)
+          if (tokens[i+1] && intervals[i+1][0] > intervals[i][1]) {
+            const intervening = document.createElement('span')
+            const start = intervals[i][1]
+            intervening.innerText = source.substr(start, intervals[i+1][0] - start)
+            content.appendChild(intervening)
+          }
+        })
+        redraw()
+      })
+    </script>
+  </body>
+</html>
