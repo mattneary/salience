@@ -36,9 +36,24 @@
         font-weight: normal;
         color: #a0a0a0;
       }
+      section#ui-container {
+        display: inline-flex;
+        scale: 70%;
+        width: 300px;
+      }
+      input[type="range"]{ width: 200px;  }
+      span#rangeValue {
+        border-radius: 20%;
+        background-color: yellow;
+        color: #222;
+        font-weight: bold;
+        margin-left: 10px;
+        padding: 5px 10px;
+      }
       span.sentence {
         --salience: 1;
         background-color: rgba(249, 239, 104, var(--salience));
+        transition: opacity .25s;
       }
       span.highlight {
         background-color: rgb(185, 225, 244);
@@ -50,7 +65,20 @@
   </head>
   <body>
     <h1>
-      Salience
+      Salience  <section id="ui-container"><input type="range" list="markers" value="0" min="0" max="1" step="0.01"  /><span id="rangeValue">0</span></section>
+      <datalist id="markers">
+        <option value="0"></option>
+        <option value=".1"></option>
+        <option value=".2"></option>
+        <option value=".3"></option>
+        <option value=".4"></option>
+        <option value=".5"></option>
+        <option value=".6"></option>
+        <option value=".7"></option>
+        <option value=".8"></option>
+        <option value=".9"></option>
+        <option value="1"></option>
+      </datalist>
       <span>automatic sentence highlights based on their significance to the document</span>
     </h1>
     <p id="content"></p>
@@ -115,5 +143,6 @@
         redraw()
       })
     </script>
+    <script src="./ui.js"></script>
   </body>
 </html>
