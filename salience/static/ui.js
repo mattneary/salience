@@ -13,7 +13,7 @@
   const contentObserver = new MutationObserver(revealUI)
   contentObserver.observe(content, observerConfig)
 
-  const uiString = '<span id="rangeValue">0.00</span><input type="range" list="markers" value="0" min="0" max="1" step="0.01"  />'
+  const uiString = '<input type="range" list="markers" value="0" min="0" max="1" step="0.01"  /><span id="rangeValue">0.00</span>'
 
 
   const addUIListener = () => {
