@@ -14,7 +14,6 @@
   contentObserver.observe(content, observerConfig)
 
   const uiString = '<input type="range" list="markers" value="0" min="0" max="1" step="0.01"  /><span id="rangeValue">0</span>'
-  const hidePerSalienceUI = new DOMParser().parseFromString(uiString, 'text/html').body.innerHTML
 
 
   const addUIListener = () => {
@@ -42,7 +41,7 @@
 
   $('#ui-container a').addEventListener('click', e => {
    e.preventDefault()
-   e.target.parentNode.innerHTML = hidePerSalienceUI
+   e.target.parentNode.innerHTML = uiString
    addUIListener()
   })
 
