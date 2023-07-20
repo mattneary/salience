@@ -36,12 +36,25 @@
         font-weight: normal;
         color: #a0a0a0;
       }
-      section#ui-container {
-        display: inline-flex;
+      section#ui-container,
+      section#ui-container a {
         scale: 70%;
-        width: 300px;
       }
-      input[type="range"]{ width: 200px;  }
+      section#ui-container.hidden {
+        opacity: 0;
+      }
+      section#ui-container {
+        height: 21px;
+        display: inline-flex;
+        width: 400px;
+        align-items: start;
+        transition: opacity 1s 1s;
+      }
+      section#ui-container a {
+        font-weight: normal;
+        padding: 1.2px;
+      }
+      input[type="range"]{ width: 300px;  }
       span#rangeValue {
         border-radius: 20%;
         background-color: yellow;
@@ -65,7 +78,10 @@
   </head>
   <body>
     <h1>
-      Salience  <section id="ui-container"><input type="range" list="markers" value="0" min="0" max="1" step="0.01"  /><span id="rangeValue">0</span></section>
+      Salience  
+      <section id="ui-container" class="hidden">
+        <a href>Hide low-salience sentences</a>
+      </section>
       <datalist id="markers">
         <option value="0"></option>
         <option value=".1"></option>
