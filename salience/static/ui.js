@@ -13,7 +13,7 @@
   const contentObserver = new MutationObserver(revealUI)
   contentObserver.observe(content, observerConfig)
 
-  const uiString = '<input type="range" list="markers" value="0" min="0" max="1" step="0.01"  /><span id="rangeValue">0</span>'
+  const uiString = '<span id="rangeValue">0.00</span><input type="range" list="markers" value="0" min="0" max="1" step="0.01"  />'
 
 
   const addUIListener = () => {
@@ -23,7 +23,7 @@
       const sen = $$( '.sentence' )
       showAllSentences( sen )
       filterSentences( sen , v )
-      $('#rangeValue').textContent = v
+      $('#rangeValue').textContent = Number.parseFloat(v).toFixed(2)
     })
   }
 
