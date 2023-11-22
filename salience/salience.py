@@ -3,12 +3,19 @@ import torch
 from sentence_transformers import SentenceTransformer
 import nltk.data
 import nltk
-from scipy import spatial
 
 nltk.download('punkt')
 
 model = SentenceTransformer('all-mpnet-base-v2')
 sent_detector = nltk.data.load('tokenizers/punkt/english.pickle')
+
+def cos_sim(a, b):
+    sims = a @ b.T
+    a_norm = np.linalg.norm(a, axis=-1)
+    b_norm = np.linalg.norm(b, axis=-1)
+    a_normalized = (sims.T / a_norm.T).T
+    sims = a_normalized / b_norm
+    return sims
 
 def degree_power(A, k):
     degrees = np.power(np.array(A.sum(1)), k).ravel()
@@ -25,11 +32,9 @@ def get_sentences(source_text):
     return sentences, sentence_ranges
 
 def text_rank(sentences):
-    vectors = [model.encode(s) for s in sentences]
-    adjacency = torch.stack([
-        torch.tensor([max(0, 1 - float(spatial.distance.cosine(a, b))) for a in vectors])
-        for b in vectors
-    ]).fill_diagonal_(0.)
+    vectors = model.encode(sentences)
+    adjacency = torch.tensor(cos_sim(vectors, vectors)).fill_diagonal_(0.)
+    adjacency[adjacency < 0] = 0
     return normalized_adjacency(adjacency)
 
 def terminal_distr(adjacency, initial=None):
